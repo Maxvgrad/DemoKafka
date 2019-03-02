@@ -1,10 +1,20 @@
 package ru.demo.kafka.demo.bean;
 
-import org.springframework.stereotype.Component;
+import java.util.Map;
 
-public interface Producer {
 
-    void configure();
+/**
+ * Интерфейс для работы с прозводителем
+ */
+public interface Producer<E, R> {
 
-    void send();
+    Map.Entry<String, Object> configure(String key, String value);
+
+    void configure(Map<String, ?> properties);
+
+    Map<String, Object> getProperties();
+
+    Map.Entry<String, Object> getProperty(String key);
+
+    R send(E record);
 }
