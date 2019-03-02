@@ -5,6 +5,7 @@ plugins {
 
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'checkstyle'
+apply plugin: 'java'
 
 group = 'ru.demo.kafka'
 version = '0.0.1-SNAPSHOT'
@@ -16,7 +17,7 @@ repositories {
 
 checkstyle {
     toolVersion '7.8.1'
-//    configFile file("config/checkstyle/checkstyle.xml")
+    //configFile file("config/checkstyle/checkstyle.xml")
 }
 checkstyleMain {
     source ='src/main/java'
@@ -26,10 +27,10 @@ checkstyleTest {
 }
 
 dependencies {
+
 	compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
-
 	compile group: 'org.apache.kafka', name: 'kafka_2.12', version: '2.1.1'
-
+	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
 
 	compile 'io.springfox:springfox-swagger-ui:2.9.2'
 	compileOnly 'org.projectlombok:lombok:1.18.6'
