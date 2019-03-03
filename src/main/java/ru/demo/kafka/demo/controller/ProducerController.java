@@ -47,19 +47,20 @@ public class ProducerController {
     @PatchMapping("/")
     public Map<String, Object> patch(String kafkaBootStrapServers, String groupId) {
         log.debug("#patch: kafka-bootstrap-servers: {}, groupId: {}, topic: {}", kafkaBootStrapServers, groupId);
-        return null;
+        return service.patch(kafkaBootStrapServers, groupId);
     }
 
     @DeleteMapping("/")
-    public Map.Entry<String, String> remove(String key) {
+    public Map.Entry<String, Object> remove(String key) {
         log.debug("#remove: key: {}", key);
-
-        return null;
+        return service.remove(key);
     }
 
-    @PostMapping("/send/{topic}")
-    public ResponseEntity send(@PathVariable String topic, @RequestBody DocumentDto document) {
-        log.debug("#send: topic: {}, document: {}", topic, document);
+    @PostMapping("/send/{topic}/{key}")
+    public ResponseEntity send(@PathVariable String topic, @PathVariable String key,
+                               @RequestBody DocumentDto document) throws Exception {
+        log.debug("#send: topic: {}, key: {}, document: {}", topic, key, document);
+        service.send(topic, key, document);
         return ResponseEntity.ok().build();
     }
 }

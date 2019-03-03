@@ -1,5 +1,6 @@
 package ru.demo.kafka.demo.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -16,6 +17,8 @@ import java.util.Map;
 public class ProducerService {
 
     private final ProducerKafka producer;
+
+    private final ObjectMapper mapper;
 
 
     public Map<String, Object> get() {
@@ -51,12 +54,13 @@ public class ProducerService {
         return entry;
     }
 
-    public void send(String topic, String key, DocumentDto document) {
+    public void send(String topic, String key, DocumentDto document) throws Exception {
 
-        ProducerRecord<String, DocumentDto> record = new ProducerRecord<String, DocumentDto>(topic, key, document);
+        String value = mapper.writeValueAsString(document);
+
+        ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, value);
 
         producer.send(record);
-        return;
     }
 
 }
