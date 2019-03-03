@@ -2,15 +2,14 @@ package ru.demo.kafka.demo.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.demo.kafka.demo.DemoApplication;
 import ru.demo.kafka.demo.dto.DocumentDto;
@@ -45,21 +44,22 @@ public class ProducerController {
     }
 
     @PatchMapping("/")
-    public Map<String, Object> patch(String kafkaBootStrapServers, String groupId) {
-        log.debug("#patch: kafka-bootstrap-servers: {}, groupId: {}, topic: {}", kafkaBootStrapServers, groupId);
-        return null;
+    public Map<String, Object> patch(String kafkaBootStrapServers) {
+        log.debug("#patch: kafka-bootstrap-servers: {}, topic: {}", kafkaBootStrapServers);
+        return service.patch(kafkaBootStrapServers);
     }
 
     @DeleteMapping("/")
-    public Map.Entry<String, String> remove(String key) {
+    public Map.Entry<String, Object> remove(String key) {
         log.debug("#remove: key: {}", key);
-
-        return null;
+        return service.remove(key);
     }
 
-    @PostMapping("/send/{topic}")
-    public ResponseEntity send(@PathVariable String topic, @RequestBody DocumentDto document) {
-        log.debug("#send: topic: {}, document: {}", topic, document);
-        return ResponseEntity.ok().build();
+    @PostMapping("/send/{topic}/{key}")
+    public DocumentDto send(@PathVariable String topic, @PathVariable String key,
+                               @RequestParam String content, @RequestParam String signInn) throws Exception {
+        log.debug("#send: topic: {}, key: {}, document: {}", topic, key, content);
+
+        return service.send(topic, key, DocumentDto.builder().content(content).signInn(signInn).build());
     }
 }

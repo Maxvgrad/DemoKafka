@@ -60,7 +60,7 @@ public class ProducerKafka implements Producer<ProducerRecord<String, String>, F
     }
 
     @Override
-    public Future<RecordMetadata> send(ProducerRecord record) {
+    public Future<RecordMetadata> send(ProducerRecord<String, String> record) {
 
         if (needRefresh) {
             producer = new KafkaProducer<>(properties);

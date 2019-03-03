@@ -1,14 +1,20 @@
 package ru.demo.kafka.demo.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.stereotype.Service;
 import ru.demo.kafka.demo.bean.ProducerKafka;
 import ru.demo.kafka.demo.dto.DocumentDto;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -17,6 +23,7 @@ public class ProducerService {
 
     private final ProducerKafka producer;
 
+    private final ObjectMapper mapper;
 
     public Map<String, Object> get() {
         return producer.getProperties();
@@ -31,10 +38,8 @@ public class ProducerService {
         return producer.getProperties();
     }
 
-    public Map<String, Object> patch(String kafkaBootStrapServers, String groupId) {
+    public Map<String, Object> patch(String kafkaBootStrapServers) {
         producer.configure(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBootStrapServers);
-        producer.configure(ProducerConfig.CLIENT_ID_CONFIG, groupId);
-
         return producer.getProperties();
     }
 
@@ -51,12 +56,34 @@ public class ProducerService {
         return entry;
     }
 
-    public void send(String topic, String key, DocumentDto document) {
+    public DocumentDto send(String topic, String key, DocumentDto document) throws Exception {
+        prepare(document);
 
-        ProducerRecord<String, DocumentDto> record = new ProducerRecord<String, DocumentDto>(topic, key, document);
+        log.debug(document.toString());
+        String value = mapper.writeValueAsString(document);
 
+        log.debug(value);
+        ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, value);
         producer.send(record);
-        return;
+        return document;
+    }
+
+    private void prepare(DocumentDto document) {
+        if (StringUtils.isBlank(document.getDraftId())) {
+            document.setDraftId(UUID.randomUUID().toString());
+        }
+
+        if (StringUtils.isBlank(document.getInternalId())) {
+            document.setInternalId(UUID.randomUUID().toString());
+        }
+
+        String content = document.getContent().replaceAll(StringUtils.CR, "").replaceAll(StringUtils.LF, "");
+        document.setContent(content);
+
+        byte[] encodedContent = Base64.getEncoder().encode(document.getContent().getBytes());
+        document.setRawDocument(new String(encodedContent, StandardCharsets.UTF_8));
+
+        document.setReceivedAt(new Date());
     }
 
 }
