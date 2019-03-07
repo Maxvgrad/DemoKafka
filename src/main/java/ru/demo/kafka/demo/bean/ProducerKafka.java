@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -33,6 +34,13 @@ public class ProducerKafka implements Producer<ProducerRecord<String, String>, F
 
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+    }
+
+    @PreDestroy
+    private void cleanUp() {
+        if (producer != null) {
+            producer.close();
+        }
     }
 
     @Override
