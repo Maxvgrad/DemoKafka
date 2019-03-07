@@ -2,6 +2,7 @@ package ru.demo.kafka.demo.bean;
 
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -61,11 +62,15 @@ public class ProducerKafka implements Producer<ProducerRecord<String, String>, F
 
     @Override
     public Future<RecordMetadata> send(ProducerRecord<String, String> record) {
+        return send(record, null);
+    }
+
+    public Future<RecordMetadata> send(ProducerRecord<String, String> record, Callback callback) {
 
         if (needRefresh) {
             producer = new KafkaProducer<>(properties);
         }
 
-        return producer.send(record);
+        return producer.send(record, callback);
     }
 }

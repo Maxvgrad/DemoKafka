@@ -6,7 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.stereotype.Service;
+import ru.demo.kafka.demo.bean.CallbackKafka;
 import ru.demo.kafka.demo.bean.ProducerKafka;
 import ru.demo.kafka.demo.dto.DocumentDto;
 
@@ -15,6 +17,8 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -22,8 +26,9 @@ import java.util.UUID;
 public class ProducerService {
 
     private final ProducerKafka producer;
-
     private final ObjectMapper mapper;
+    private final CallbackKafka callbackKafka;
+
 
     public Map<String, Object> get() {
         return producer.getProperties();
@@ -64,7 +69,10 @@ public class ProducerService {
 
         log.debug(value);
         ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, value);
-        producer.send(record);
+        Future<RecordMetadata> metadataFuture = producer.send(record, callbackKafka);
+
+        log.debug("#send: {}", metadataFuture.get(5, TimeUnit.SECONDS));
+
         return document;
     }
 
