@@ -54,4 +54,8 @@ public class Configurator<K, V> {
         return get();
     }
 
+    public V remove(String key) {
+        return properties.remove(key);
+    }
+
 }
