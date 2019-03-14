@@ -1,6 +1,12 @@
-rootProject.name = 'DemoKafka'
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
 
-include 'demo-kafka-client'
-include 'kafka-twitter-client'
-include 'demo-kafka-boot'
+rootProject.name = 'demo'
+
+include 'kafka-client'
+include 'twitter-client'
+include 'kafka-boot'
 
