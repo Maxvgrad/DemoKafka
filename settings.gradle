@@ -1,12 +1,6 @@
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-    }
-}
-
 rootProject.name = 'demo'
 
 include 'kafka-client'
-include 'twitter-client'
 include 'kafka-boot'
+include 'betfair-client'
 
