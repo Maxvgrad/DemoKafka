@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,9 +58,9 @@ public class ProducerController {
 
     @PostMapping("/send/{topic}/{key}")
     public DocumentDto send(@PathVariable String topic, @PathVariable String key,
-                               @RequestParam String content, @RequestParam String signInn) throws Exception {
+                               @RequestParam String content, @RequestParam String signInn, @RequestBody String signature) throws Exception {
         log.debug("#send: topic: {}, key: {}, document: {}", topic, key, content);
 
-        return service.send(topic, key, DocumentDto.builder().content(content).signInn(signInn).build());
+        return service.send(topic, key, DocumentDto.builder().content(content).signInn(signInn).signature(signature).build());
     }
 }
